@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  app:
+    build: crm-platform
+    ports:
+      - 8000:8000
+
+  database:
+    image: 'postgres:16'
+    container-name: 'postgres-db'
+    ports:
+      - 15432:5432
+    env_file:
+      - .env
+    networks:
+      - postgres-network
+    volumes:
+      - db-data/:/var/lib/postgresql/data/
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+  
+networks: 
+  postgres-network:
+    driver: bridge
