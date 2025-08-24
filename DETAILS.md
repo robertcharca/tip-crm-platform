@@ -31,5 +31,9 @@ The Entity-Relationship diagram is based with the following fields:
 - **interaction_type:** type of given interaction.
 - **interaction_date:** date of given interaction
 
+![E/R Diagram](https://github.com/robertcharca/tip-crm-platform/blob/dev/assets/er_diagram.png?raw=true)
+
 ## Possible Initial AWS Architecture
 Due to the way this project is implemented, it's possible to implement an initial architecture in AWS with ECS, RDS and networking services as well as logs and secrets services.
+
+![Initial AWS Architecture](https://github.com/robertcharca/tip-crm-platform/blob/dev/assets/initial_architecture.png?raw=true)
