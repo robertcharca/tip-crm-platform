@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+<h1 class="mb-4 text-primary" style="text-align: center;">CRM Platform</h1>
+
+<!-- Filters -->
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <input type="text" class="form-control" name="search" placeholder="Buscar por nombre..." value="{{ request.GET.search }}">
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" name="birthday">
+            <option value="">-- Filtrar cumpleaños --</option>
+            <option value="this_week" {% if request.GET.birthday == "this_week" %}selected{% endif %}>
+                Cumpleaños esta semana
+            </option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select class="form-select" name="order">
+            <option value="">-- Ordenar por --</option>
+            <option value="name" {% if request.GET.order == "name" %}selected{% endif %}>Nombre</option>
+            <option value="company" {% if request.GET.order == "company" %}selected{% endif %}>Compañía</option>
+            <option value="birthday" {% if request.GET.order == "birthday" %}selected{% endif %}>Cumpleaños</option>
+            <option value="last_interaction" {% if request.GET.order == "last_interaction" %}selected{% endif %}>Última interacción</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-success w-100">Aplicar</button>
+    </div>
+</form>
+
+<!-- Table -->
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <table class="table table-striped table-hover mb-0">
+            <thead class="table-success">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Compañía</th>
+                    <th>Cumpleaños</th>
+                    <th>Última interacción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in page_obj %}
+                <tr>
+                    <td>{{ customer.first_name }} {{ customer.last_name }}</td>
+                    <td>{{ customer.company.name }}</td>
+                    <td>{{ customer.birthdate|date:"d M Y" }}</td>
+                    <td>
+                        {% if customer.last_interaction_date %}
+                            {{ customer.last_interaction_date|naturaltime }}
+                            <span class="badge bg-info text-dark">{{ customer.last_interaction_type }}</span>
+                        {% else %}
+                            <span class="text-muted">No hay interacciones</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center text-muted">No se encontraron clientes.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination -->
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Primera</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Anterior</a>
+            </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+                <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Siguiente</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Última</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endblock %}

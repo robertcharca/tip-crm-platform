@@ -11,10 +11,44 @@ fake = Faker("es_ES")
 
 
 class Command(BaseCommand):
+    """
+    seed_initial_data command:
+    Internal command to generate fake data to fill each SQL table.
+    """
+
     help = "Seed initial Users and Companies"
 
 
     def handle(self, *args, **kwargs):
+        """
+        handle: logic to generate fake data.
+        
+        Users:
+        If there isn't data in 'users' table, then it takes a list of
+        objects to generate data. For 'password', it uses the Django
+        make_password function to encrypt it. 
+
+        Companies:
+        If there isn't data in 'companies' table, then it takes a list of
+        string values to generate data inside the table.
+
+        Customers:
+        If there isn't data in 'customers' table, then it takes the users
+        and companies Django database objects. It iterates 1000 times to
+        generate values. Due to it's 1000 rows, it bulks data by 2 batches
+        of 500 rows.
+
+        Interactions:
+        If there isn't data in 'interactions' table, then it takes the
+        customers Django database objects. The list 'interaction_types',
+        considered by the ENUM type in the same field, is taken for
+        generating the data. For optimizing data load, it iterates
+        through all customers and 500 iterations for each one to create
+        Interactions data whether the iteration is still in progress or
+        has finished, it bulks data by baches of 5000 rows.
+        """
+        
+        # Users
         if not Users.objects.exists():
             self.stdout.write("Creating Users data...")
             users = [
@@ -34,6 +68,7 @@ class Command(BaseCommand):
         else:
             self.stdout.write(self.style.WARNING("Users table already has data"))
 
+        # Companies
         if not Companies.objects.exists():
             self.stdout.write("Creating Companies data...")
             companies = [
@@ -53,6 +88,7 @@ class Command(BaseCommand):
         else:
             self.stdout.write(self.style.WARNING("Companies table already has data"))
 
+        # Customers
         if not Customers.objects.exists():
             self.stdout.write("Creating Customers data...")
 
@@ -76,6 +112,7 @@ class Command(BaseCommand):
         else:
             self.stdout.write(self.style.WARNING("Customers table already has data"))
 
+        # Interactions
         if not Interactions.objects.exists():
             self.stdout.write("Creating Interactions data...")
             interaction_types = ["Call", "Email", "SMS", "Facebook", "WhatsApp", "Other"]
