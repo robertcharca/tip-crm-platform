@@ -5,6 +5,10 @@ It uses Django, PostgreSQL, and Bootstrap (Minty theme from Bootswatch) for a cl
 
 ---
 
+![CRM Platform Background](https://github.com/robertcharca/tip-crm-platform/blob/dev/assets/crm_platform.png?raw=true)
+
+---
+
 ## Features
 - Generate ~500K rows of demo data (Users, Companies, Customers, Interactions).
 - Explore customers with:
